@@ -1,30 +1,6 @@
 #include "index.h"
-
+#include "settings.h"
 #include <iostream>
-//***********************************************************************************************************
-#pragma region Data necessary for testing (names/passwords etc.)
-//***********************************************************************************************************
-std::wstring TEST_DOMAIN{ L"dev.makves.ru" };
-std::wstring TEST_DOMAIN_SHORT{ L"dev" };
-std::wstring TEST_SERVER{ L"MK-ADC-01" }; // Name for the KDC machine
-
-// This user represents pure "client" and does not have any SPNs
-std::wstring TEST_USER_1_NAME{ L"gbtm" };
-std::wstring TEST_USER_1_PASS{ L"123456Ab" };
-
-// This user represents one of "service" and need to have SPNs
-// All the delegation variants must be set for this particular user
-std::wstring TEST_USER_2_NAME{ L"User_0001" };
-std::wstring TEST_USER_2_PASS{ L"123456Ab" };
-std::wstring TEST_USER_2_SPN{ L"SPN1/SPN1" };
-
-// This user represents one of "service" and need to have SPNs
-// For this "service" user #1 will delegate client's tickets
-std::wstring TEST_USER_3_NAME{ L"User_0002" };
-std::wstring TEST_USER_3_PASS{ L"123456Ab" };
-std::wstring TEST_USER_3_SPN{ L"SPN2/SPN2" };
-//***********************************************************************************************************
-#pragma endregion
 //***********************************************************************************************************
 /*
 	With the function it is possible to test literaly any type of communication between "client" and "service".
@@ -268,7 +244,7 @@ void test_submit_client_tkt()
 		std::wprintf(L"%ws\n", wres.c_str());
 
 	}
-	
+
 }
 //***********************************************************************************************************
 void test_submit_tkt()
@@ -342,7 +318,7 @@ void test_pin_unpin_kdc()
 {
 	XKERB::XCallAuthenticationPackage<KerbPinKdcMessage>({
 		.Realm = TEST_DOMAIN,
-		.KdcAddress = L"172.16.55.1" // If port specified then no TCP/UDP at all, thus only default port 88 would be using by Kerberos
+		.KdcAddress = KDC_SERVER_IP // If port specified then no TCP/UDP at all, thus only default port 88 would be using by Kerberos
 		});
 
 
@@ -378,11 +354,9 @@ void test_pin_unpin_kdc()
 int main()
 {
 	XKERB::XLogonUserParameters params;
-	params.Domain = L"dev.makves.ru";
-	params.User = L"gbtm";
-	params.Password = L"123456Ab";
-
-
+	params.Domain = TEST_DOMAIN;
+	params.User = TEST_USER_1_NAME;
+	params.Password = TEST_USER_1_PASS;
 
 	auto ClientToken = XKERB::XLogonUser(params);
 
