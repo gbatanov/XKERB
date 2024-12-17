@@ -1,6 +1,7 @@
 #include "index.h"
 #include "settings.h"
 #include <iostream>
+#include <format>
 //***********************************************************************************************************
 /*
 	With the function it is possible to test literaly any type of communication between "client" and "service".
@@ -31,8 +32,6 @@ void universal_flow(
 		auto ClientToken = XKERB::XLogonUser(ClientLogonParameters);
 		auto ServerToken = XKERB::XLogonUser(ServiceLogonParameters);
 
-
-
 		{
 			auto ImpersonateGuard = XKERB::XImpersonateLoggedOnUser(ClientToken.get());
 			ClientCredentialsHandle = XKERB::XAcquireCredentialsHandle({ .CredentialsUse = SECPKG_CRED_OUTBOUND, .Package = PackageName });
@@ -41,16 +40,12 @@ void universal_flow(
 		// If we do not put ISC_REQ_DELEGATE here then on service side would be only a ticket to the service, not for KRBTGT
 		XKERB::XClientSecurityContext ClientContext{ ClientCredentialsHandle.get(), ClientContextFlags, TargetServiceName };
 
-
-
 		{
 			auto ImpersonateGuard = XKERB::XImpersonateLoggedOnUser(ServerToken.get());
 			ServerCredentialsHandle = XKERB::XAcquireCredentialsHandle({ .CredentialsUse = SECPKG_CRED_INBOUND, .Package = PackageName });
 		}
 
 		XKERB::XServerSecurityContext ServerContext{ ServerCredentialsHandle.get(), ServiceContextFlags };
-
-
 
 		do
 		{
